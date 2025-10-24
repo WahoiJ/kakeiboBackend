@@ -19,5 +19,5 @@ services:
       - key: SPRING_PROFILES_ACTIVE
         value: "prod"
       - key: CORS_ALLOWED_ORIGINS
-        value: "https://kakeibo-frontend.onrender.com"
+        value: "https://kakeibofrontend.onrender.com"
     autoDeploy: true
