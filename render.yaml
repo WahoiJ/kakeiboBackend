@@ -3,7 +3,7 @@ services:
     name: kakeibo-backend
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: ${DATABASE_URL}
+        value: jdbc:${DATABASE_URL}
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: "validate"
       - key: SERVER_PORT
