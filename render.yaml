@@ -9,7 +9,7 @@ services:
       - key: SPRING_DATASOURCE_PASSWORD
         value: ${DB_PASSWORD}
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
-        value: "validate"
+        value: "update"
       - key: SERVER_PORT
         value: "8080"
       - key: SPRING_PROFILES_ACTIVE
