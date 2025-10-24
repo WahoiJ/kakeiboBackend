@@ -7,14 +7,17 @@ services:
     startCommand: "java -jar build/libs/kakeibo-0.0.1-SNAPSHOT.jar"
     envVars:
       - key: SPRING_DATASOURCE_URL
-        scope: build
+        value: "jdbc:postgresql://dpg-d3th9vje5dus738v66pg-a.oregon-postgres.render.com:5432/kakeibo_mfvu"
       - key: SPRING_DATASOURCE_USERNAME
-        scope: build
+        value: "kakeibo_user"
       - key: SPRING_DATASOURCE_PASSWORD
-        scope: build
+        value: ${DB_PASSWORD}
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: "validate"
       - key: SERVER_PORT
         value: "8080"
-    staticPublishPath: ./build/resources/main/static
+      - key: SPRING_PROFILES_ACTIVE
+        value: "prod"
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://kakeibo-frontend.onrender.com"
     autoDeploy: true
