@@ -3,7 +3,7 @@ services:
     name: kakeibo-backend
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:${DATABASE_URL}
+        value: jdbc:postgresql://dpg-d3th9vje5dus738v66pg-a.oregon-postgres.render.com:5432/kakeibo_mfvu?user=kakeibo_user&password=${DB_PASSWORD}
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: "validate"
       - key: SERVER_PORT
