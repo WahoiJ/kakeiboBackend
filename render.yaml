@@ -1,4 +1,5 @@
 services:
+<<<<<<< HEAD
       - key: DATABASE_URL
         value: "jdbc:postgresql://db.gvgpclyykcbekiqglzny.supabase.co:5432/postgres?sslmode=require"
       - key: DB_USERNAME
@@ -8,6 +9,17 @@ services:
       - key: DB_PASSWORD
         value: "[YOUR_SUPABASE_PASSWORD]"
 >>>>>>> 24aa7cf (Update database config to use Supabase with environment variables)
+=======
+  - type: web
+    name: kakeibo-backend
+    envVars:
+      - key: DATABASE_URL
+        value: "jdbc:postgresql://[YOUR_SUPABASE_HOST]:5432/postgres"
+      - key: DB_USERNAME
+        value: "postgres"
+      - key: DB_PASSWORD
+        value: "[YOUR_SUPABASE_PASSWORD]"
+>>>>>>> 24aa7cfc3447cc5ee77468a0b32de1849057f6d2
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: "update"
       - key: SERVER_PORT
