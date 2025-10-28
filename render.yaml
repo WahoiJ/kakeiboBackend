@@ -2,14 +2,14 @@ services:
   - type: web
     name: kakeibo-backend
     envVars:
-      - key: SPRING_DATASOURCE_URL
-        value: "jdbc:postgresql://dpg-d3th9vje5dus738v66pg-a.oregon-postgres.render.com:5432/kakeibo_mfvu"
-      - key: SPRING_DATASOURCE_USERNAME
-        value: "kakeibo_user"
-      - key: SPRING_DATASOURCE_PASSWORD
-        value: ${DB_PASSWORD}
+      - key: DATABASE_URL
+        value: "jdbc:postgresql://[YOUR_SUPABASE_HOST]:5432/postgres"
+      - key: DB_USERNAME
+        value: "postgres"
+      - key: DB_PASSWORD
+        value: "[YOUR_SUPABASE_PASSWORD]"
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
-        value: "validate"
+        value: "update"
       - key: SERVER_PORT
         value: "8080"
       - key: SPRING_PROFILES_ACTIVE
