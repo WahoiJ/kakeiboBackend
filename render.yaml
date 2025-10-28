@@ -1,13 +1,13 @@
 services:
-  - type: web
-    name: kakeibo-backend
-    envVars:
-      - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d3th9vje5dus738v66pg-a.oregon-postgres.render.com:5432/kakeibo_mfvu
-      - key: SPRING_DATASOURCE_USERNAME
-        value: keibo_user
-      - key: SPRING_DATASOURCE_PASSWORD
+      - key: DATABASE_URL
+        value: "jdbc:postgresql://db.gvgpclyykcbekiqglzny.supabase.co:5432/postgres?sslmode=require"
+      - key: DB_USERNAME
+        value: "postgres"
+      - key: DB_PASSWORD
         value: ${DB_PASSWORD}
+      - key: DB_PASSWORD
+        value: "[YOUR_SUPABASE_PASSWORD]"
+>>>>>>> 24aa7cf (Update database config to use Supabase with environment variables)
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: "update"
       - key: SERVER_PORT
