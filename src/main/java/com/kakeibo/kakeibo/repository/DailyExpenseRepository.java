@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.kakeibo.kakeibo.entity.DailyExpenseEntity;
 
-public interface DailyExpenseRepository extends JpaRepository<DailyExpenseEntity, Integer>{
+public interface DailyExpenseRepository extends JpaRepository<DailyExpenseEntity, Integer> {
 
-    public List<DailyExpenseEntity> findByUserId(Long userId);
+    List<DailyExpenseEntity> findByUserIdOrderByExpenseDateDescExpenseIdDesc(Integer userId);
 
+    /** 指定月（"YYYY-MM"）の出費を取得 */
+    List<DailyExpenseEntity> findByUserIdAndExpenseDateStartingWith(Integer userId, String monthPrefix);
 }

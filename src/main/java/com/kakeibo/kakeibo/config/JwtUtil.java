@@ -1,22 +1,27 @@
 package com.kakeibo.kakeibo.config;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "mySecretKeymySecretKeymySecretKeymySecretKey"; // 256ビット以上
-    private final long EXPIRATION_TIME = 86400000; // 1日
+    private static final long EXPIRATION_TIME = 86400000; // 1日
 
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    private final SecretKey signingKey;
+
+    // 本番では環境変数 JWT_SECRET（32文字以上）を設定すること
+    public JwtUtil(@Value("${jwt.secret:mySecretKeymySecretKeymySecretKeymySecretKey}") String secret) {
+        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(String username, Integer userId) {
@@ -25,39 +30,16 @@ public class JwtUtil {
                 .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getSigningKey())
+                .signWith(signingKey)
                 .compact();
     }
 
-    public String extractUsername(String token) {
+    /** トークンを検証して Claims を返す。不正・期限切れの場合は JwtException を投げる */
+    public Claims parse(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
-
-    public Integer extractUserId(String token) {
-        return (Integer) Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("userId");
-    }
-
-    public boolean isTokenExpired(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration()
-                .before(new Date());
-    }
-
-    public boolean validateToken(String token, String username) {
-        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
+                .getBody();
     }
 }
