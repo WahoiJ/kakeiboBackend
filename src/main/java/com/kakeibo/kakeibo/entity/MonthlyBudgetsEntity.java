@@ -1,8 +1,11 @@
 package com.kakeibo.kakeibo.entity;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -37,10 +40,16 @@ public class MonthlyBudgetsEntity {
     @Column(name = "income")
     private Double income;
 
-    /** 固定費（家賃・通信費など） */
+    /** 固定費の合計（家賃・通信費など）。項目がある場合はその合計 */
     @JsonProperty("fixed_costs")
     @Column(name = "fixed_costs")
     private Double fixedCosts;
+
+    /** 固定費の内訳（null なら合計のみ入力） */
+    @JsonProperty("fixed_cost_items")
+    @Convert(converter = FixedCostItemsConverter.class)
+    @Column(name = "fixed_cost_items", columnDefinition = "text")
+    private List<FixedCostItem> fixedCostItems;
 
     /** 貯めたい額 */
     @JsonProperty("savings_goal")
