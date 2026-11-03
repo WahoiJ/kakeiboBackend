@@ -1,5 +1,6 @@
 package com.kakeibo.kakeibo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.kakeibo.kakeibo.entity.FixedCostItem;
 import com.kakeibo.kakeibo.entity.MonthlyBudgetsEntity;
 import com.kakeibo.kakeibo.repository.MonthlyBudgetsRepository;
 import com.kakeibo.kakeibo.util.MonthUtil;
@@ -30,10 +32,17 @@ public class MonthlyBudgetsService {
     public MonthlyBudgetsEntity saveBudget(Integer userId, MonthlyBudgetsEntity budget) {
         Double income = budget.getIncome();
         Double fixedCosts = null;
+        List<FixedCostItem> fixedCostItems = null;
         Double savingsGoal = null;
         double available;
         if (income != null) {
-            fixedCosts = nonNegative(budget.getFixedCosts(), "固定費");
+            if (budget.getFixedCostItems() != null) {
+                // 項目が送られてきたら合計はサーバー側で計算する
+                fixedCostItems = normalizeItems(budget.getFixedCostItems());
+                fixedCosts = fixedCostItems.stream().mapToDouble(FixedCostItem::amount).sum();
+            } else {
+                fixedCosts = nonNegative(budget.getFixedCosts(), "固定費");
+            }
             savingsGoal = nonNegative(budget.getSavingsGoal(), "貯めたい額");
             if (income < 0) {
                 throw badRequest("収入は0円以上を指定してください");
@@ -60,8 +69,32 @@ public class MonthlyBudgetsService {
         entity.setAvailableAmount(available);
         entity.setIncome(income);
         entity.setFixedCosts(fixedCosts);
+        entity.setFixedCostItems(fixedCostItems);
         entity.setSavingsGoal(savingsGoal);
         return repository.save(entity);
+    }
+
+    /** 空行を除き、名前と金額を検証する */
+    private static List<FixedCostItem> normalizeItems(List<FixedCostItem> items) {
+        if (items.size() > 50) {
+            throw badRequest("固定費の項目は50個までです");
+        }
+        List<FixedCostItem> result = new ArrayList<>();
+        for (FixedCostItem item : items) {
+            if (item == null) {
+                continue;
+            }
+            String name = item.name() == null ? "" : item.name().trim();
+            if (name.isEmpty() && (item.amount() == null || item.amount() == 0)) {
+                continue;
+            }
+            if (name.length() > 50) {
+                throw badRequest("固定費の項目名は50文字以内にしてください");
+            }
+            double amount = nonNegative(item.amount(), name.isEmpty() ? "固定費" : name);
+            result.add(new FixedCostItem(name.isEmpty() ? "その他" : name, amount));
+        }
+        return result;
     }
 
     private static double nonNegative(Double value, String label) {
