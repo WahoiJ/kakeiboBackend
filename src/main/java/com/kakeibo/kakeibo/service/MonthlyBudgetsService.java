@@ -47,10 +47,8 @@ public class MonthlyBudgetsService {
             if (income < 0) {
                 throw badRequest("収入は0円以上を指定してください");
             }
+            // 固定費と貯めたい額が収入を超える場合もそのまま保存する（使えるお金はマイナスになる）
             available = income - fixedCosts - savingsGoal;
-            if (available < 0) {
-                throw badRequest("固定費と貯めたい額の合計が収入を超えています");
-            }
         } else {
             if (budget.getAvailableAmount() == null || budget.getAvailableAmount() < 0) {
                 throw badRequest("使ってよい金額は0円以上を指定してください");
