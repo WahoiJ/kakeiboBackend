@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,6 +34,11 @@ public class DailyExpenseController {
     public ResponseEntity<DailyExpenseEntity> createExpense(@RequestBody DailyExpenseEntity expense) {
         Integer userId = AuthUser.requireSelf(expense.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(expenseService.saveExpense(userId, expense));
+    }
+
+    @PutMapping("/{expenseId}")
+    public DailyExpenseEntity updateExpense(@PathVariable Integer expenseId, @RequestBody DailyExpenseEntity expense) {
+        return expenseService.updateExpense(AuthUser.current().id(), expenseId, expense);
     }
 
     @DeleteMapping("/{expenseId}")

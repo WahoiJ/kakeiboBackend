@@ -32,4 +32,9 @@ public class DailyExpenseEntity {
     @JsonProperty("amount")
     @Column(name = "amount")
     private Double amount;
+
+    /** カテゴリ（食費・日用品など）。未指定の既存データは null */
+    @JsonProperty("category")
+    @Column(name = "category", length = 20)
+    private String category;
 }
