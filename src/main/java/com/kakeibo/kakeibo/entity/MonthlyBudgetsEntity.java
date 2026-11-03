@@ -1,4 +1,3 @@
-// filepath: d:\Programming\Kakeibo\backend\kakeibo\src\main\java\com\kakeibo\kakeibo\entity\MonthlyBudgetsEntity.java
 package com.kakeibo.kakeibo.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,13 +21,29 @@ public class MonthlyBudgetsEntity {
 
     @JsonProperty("user_id")
     @Column(name = "user_id")
-    private Integer userId;  // 変更: user_id -> userId
+    private Integer userId;
 
     @JsonProperty("budget_month")
     @Column(name = "budget_month")
-    private String budgetMonth;  // 変更: budget_month -> budgetMonth
+    private String budgetMonth;
 
+    /** 使ってよい金額。逆算モードでは 収入 − 固定費 − 貯めたい額 */
     @JsonProperty("available_amount")
     @Column(name = "available_amount")
     private Double availableAmount;
+
+    /** 収入（逆算モードのみ。直接入力の場合は null） */
+    @JsonProperty("income")
+    @Column(name = "income")
+    private Double income;
+
+    /** 固定費（家賃・通信費など） */
+    @JsonProperty("fixed_costs")
+    @Column(name = "fixed_costs")
+    private Double fixedCosts;
+
+    /** 貯めたい額 */
+    @JsonProperty("savings_goal")
+    @Column(name = "savings_goal")
+    private Double savingsGoal;
 }
