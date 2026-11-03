@@ -16,15 +16,20 @@ import lombok.Data;
 public class DailyExpenseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("expense_id")
     @Column(name = "expense_id")
-    private Integer expense_id;
-    @JsonProperty("user_id")//後で調べる
+    private Integer expenseId;
+
+    @JsonProperty("user_id")
     @Column(name = "user_id")
     private Integer userId;
+
+    /** YYYY-MM-DD */
+    @JsonProperty("expense_date")
     @Column(name = "expense_date")
-    private String expense_date;
+    private String expenseDate;
+
+    @JsonProperty("amount")
     @Column(name = "amount")
     private Double amount;
-    @Column(name = "date")
-    private String date;
 }

@@ -1,6 +1,7 @@
 package com.kakeibo.kakeibo.config;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,6 +9,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,36 +29,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userName;
-        final Integer userId;
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        jwt = authHeader.substring(7);
-        System.out.println("JWT: " + jwt);
-        try {
-            userName = jwtUtil.extractUsername(jwt);
-            userId = jwtUtil.extractUserId(jwt);
-            System.out.println("Extracted userName: " + userName + ", userId: " + userId);
-        } catch (Exception e) {
-            System.out.println("JWT extraction error: " + e.getMessage());
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtUtil.validateToken(jwt, userName)) {
-                System.out.println("Token valid, setting authentication for " + userName);
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userName, null, null);
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            } else {
-                System.out.println("Token invalid for " + userName);
+        if (authHeader != null && authHeader.startsWith("Bearer ")
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
+            try {
+                // 署名・有効期限の検証は parse 時に行われる
+                Claims claims = jwtUtil.parse(authHeader.substring(7));
+                Integer userId = claims.get("userId", Integer.class);
+                String userName = claims.getSubject();
+                if (userId != null && userName != null) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            new AuthUser(userId, userName), null, List.of());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } catch (JwtException | IllegalArgumentException e) {
+                // 不正・期限切れトークンは未認証として扱う
             }
         }
         filterChain.doFilter(request, response);

@@ -9,20 +9,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kakeibo.kakeibo.config.AuthUser;
 import com.kakeibo.kakeibo.entity.MonthlyBudgetsEntity;
 import com.kakeibo.kakeibo.service.MonthlyBudgetsService;
 
 @RestController
 public class MonthlyBudgetsController {
     @Autowired
-    MonthlyBudgetsService monthlyBudgetsService;
+    private MonthlyBudgetsService monthlyBudgetsService;
 
     @GetMapping("/api/budgets")
-    public List<MonthlyBudgetsEntity> getBudgets(@RequestParam("userId") Integer userId) {
-        return monthlyBudgetsService.getBudgetsByUserId(userId);
+    public List<MonthlyBudgetsEntity> getBudgets(@RequestParam(value = "userId", required = false) Integer userId) {
+        return monthlyBudgetsService.getBudgetsByUserId(AuthUser.requireSelf(userId));
     }
+
     @PostMapping("/api/budgets")
     public MonthlyBudgetsEntity addBudget(@RequestBody MonthlyBudgetsEntity budget) {
-        return monthlyBudgetsService.saveBudget(budget);
+        return monthlyBudgetsService.saveBudget(AuthUser.requireSelf(budget.getUserId()), budget);
     }
 }
