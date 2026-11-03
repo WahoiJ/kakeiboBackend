@@ -32,7 +32,7 @@ public class SecurityConfig {
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/", "/error", "/api/users/register", "/api/users/login").permitAll()
+                .requestMatchers("/", "/error", "/api/version", "/api/users/register", "/api/users/login").permitAll()
                 .anyRequest().authenticated()
             )
             // 未認証・トークン期限切れは 401 を返す（フロントはこれを受けてログイン画面に戻す）
